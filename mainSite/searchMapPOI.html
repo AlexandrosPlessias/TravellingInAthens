@@ -1,0 +1,363 @@
+<!doctype html>
+<html>
+    <head>
+		<?php session_start();?>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Αναζήτηση POI στον χάρτη</title>
+        <link rel="stylesheet" href="styles.css" type="text/css" />
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+		<script
+				src="http://maps.googleapis.com/maps/api/js">
+		</script>
+		
+		<script>
+		
+			var map;
+			var markers = [];
+			var infowindow;
+			
+			function initialize() {
+
+				//---------CREATE MAP----------
+				var mapProp = {center:new google.maps.LatLng(38.016722066,23.816299438),zoom:10,mapTypeId:google.maps.MapTypeId.ROADMAP};
+				map=new google.maps.Map(document.getElementById("googleMap"), mapProp);
+				//-------------------------------
+				
+				
+				//---------LOAD THE MARKERS IMAGES--------
+				var markerHotel = 'image/MarkerHotel.png';
+				var markerBeach = 'image/MarkerBeach.png';
+				var markerClub = 'image/MarkerClub.png';
+				var markerRestaurant = 'image/MarkerRestaurant.png';
+				//--------------------------------------------
+				
+				
+				//---------CREATE MARKERS----------
+				var AkanthusClub = new google.maps.Marker({position: new google.maps.LatLng(37.905579,23.717482),map: map,icon: markerClub});
+				var NaluBar = new google.maps.Marker({position: new google.maps.LatLng(37.905565,23.717482),map: map,icon: markerClub});
+				var WClub = new google.maps.Marker({position: new google.maps.LatLng(37.866015,23.767944),map: map,icon: markerClub});
+				var electraHotel = new google.maps.Marker({position: new google.maps.LatLng(37.9756694146866,23.73308926820755),map: map,icon: markerHotel});
+				var poseidonHOTEL = new google.maps.Marker({position: new google.maps.LatLng(37.919064428393,23.70100736618042),map: map,icon: markerHotel});
+				var grandeBretagneHOTEL = new google.maps.Marker({position: new google.maps.LatLng(37.9761430187315,23.73524844646454),map: map,icon: markerHotel});
+				var AsteraBeach = new google.maps.Marker({position: new google.maps.LatLng(37.81029570909205,23.77386823296547),map: map,icon: markerBeach});
+				var MarathonaBeach = new google.maps.Marker({position: new google.maps.LatLng(38.10795230920858,23.98263931274414),map: map,icon: markerBeach});				
+				var VaroulkoRestaurant = new google.maps.Marker({position: new google.maps.LatLng(37.937376,23.658553),map: map,icon: markerRestaurant});
+				var OrizontesRestaurant = new google.maps.Marker({position: new google.maps.LatLng(37.98188945287426,23.74368667602539),map: map,icon: markerRestaurant});
+				//--------------------------------
+
+				
+				//---------PUSH MARKERS----------				
+				markers.push(AkanthusClub);
+				markers.push(NaluBar);
+				markers.push(WClub);
+				markers.push(electraHotel);
+				markers.push(poseidonHOTEL);
+				markers.push(grandeBretagneHOTEL);
+				markers.push(AsteraBeach);
+				markers.push(MarathonaBeach);
+				markers.push(VaroulkoRestaurant);
+				markers.push(OrizontesRestaurant);				
+				//---------------------------------				
+				
+				
+				//---------INFOWINDOW CONTENT----------------
+				var contentAkanthus = '<h4>Akanthus Club</h4>' 
+				+ '<p style="color:black"><b>Akanthus details:</b> Leof. Poseidonos, Kalamaki, Athens, Greece</p>' 
+				+ '<p style="color:black">tel: +30.210.96.80.800 </p>' 
+				+ '<p style="color:black"> NO PHOTO ONLY VIDEO </p>'
+				+ '<p style="color:black">Web Site:  <a href="http://www.akanthus.gr" target="_blank">' 
+				+ 'http://www.akanthus.gr/</a></p> '
+				;
+				
+				var contentNaluBar = '<h4>Nalu Cafe Bar</h4>'
+				+ '<p style="color:black">Στο Νalu από νωρίς το πρωί μπορείς να απολαύσεις το ρόφημα σου και να χαλαρώσεις μαζί με τους φίλους σου στις παρεΐστικες γωνιές του.</p>' 
+				+ '<p style="color:black"><b>Nalu details:</b> Leof. Poseidonos, Kalamaki, Athens, Greece</p>' 
+				+ '<p style="color:black">tel: +30.210.98.80.990 </p>' 
+				+ '<input style="width:300px;height:300px" type="image" style="cursor:default" src="uploads/Nalu-2.jpg" onclick="this.disabled = true" />' 
+				+ '<p style="color:black">Web Site:  <a href="http://nalu.gr/" target="_blank">'
+				+ 'http://nalu.gr/</a></p>'
+				;
+				
+				var contentWClub = '<h4>W Club</h4>' 
+				+ '<p style="color:black">Ο πιο καλοκαιρινός και καλαίσθητος χώρος του BED στον Αστέρα Γλυφάδας υποδέχεται φέτος το κορυφαίο nightclub W ενώνουν τις δυνάμεις τους και προετοιμάζουν ένα ιδανικό καλοκαίρι, δίνοντας υπόσχεση στο κοινό για μοναδικές νύχτες διασκέδασης.Ο χώρος ανακαινίζεται, αλλάζει και διαμορφώνεται με υψηλή αισθητική και σε επίπεδα έτσι ώστε να καλύπτει τις απαιτήσεις όλων, με prive area, dancestage, καθώς και τον χώρο δίπλα στην πισίνα.</p>' 
+				+ '<p style="color:black"><b>W details:</b> Poseidonos Avenue 58 Glyfada, Greece</p>' 
+				+ '<p style="color:black">tel: +21 0894 7911 </p>' 
+				+ '<input style="width:300px;height:300px" type="image" style="cursor:default" src="uploads/w club.jpg" onclick="this.disabled = true" />' 
+				+ '<p style="color:black">Web Site:  <a href="https://www.facebook.com/Wnightclub.gr" target="_blank">' 
+				+ 'https://www.facebook.com/Wnightclub.gr</a></p>'
+				;
+				
+				var contentElectraHotel = '<h4>Electra Hotel</h4>' 
+				+ '<p style="color:black">Inviting and welcoming, the Electra Athens, in the city’s commercial district is the place to stay whether you are here for business or pleasure. Subtle and elegant and just off Syntagma square, our hotel rooms and suites are ideally located to host your city break or business trip without sacrificing the style and comfort you are used to.</p>' 
+				+ '<p style="color:black"><b>Electra details:</b> 5 Ermou Str., 10563 Athens, Greece</p>' 
+				+ '<p style="color:black">tel: +30 210 337 8000 </p>' 
+				+ '<input style="width:300px;height:300px" type="image" style="cursor:default" src="uploads/electra-hotel-athens.jpg" onclick="this.disabled = true" />' 
+				+ '<p style="color:black">Web Site:  <a href="http://electrahotels.gr/" target="_blank">' 
+				+ 'http://electrahotels.gr/</a></p>'
+				;
+
+				var contentPoseidonHOTEL = '<h4>Poseidon Hotel</h4>' 
+				+ '<p style="color:black">Overlooking the sparkling blue waters of Argosaronic Gulf, Poseidon Hotel offers refined hospitality and comfort.Positioned at 72nd Poseidonos Avenue, guests are close to main attractions and sights. The hotel is within easy walking distance of the Alimos and Flisvos Marinas, with a plethora of recreation and relaxation opportunities.Convenient to Athens International airport Eleftherios Venizelos, Piraeus port, the historic center and major venues, the hotel offers a great retreat for both the business and leisure traveller.</p>' + '<p style="color:black"><b>Poseidon details:</b> 72 Poseidonos Avenue ,17562 ,Paleo Faliro Athens, Greece</p>' 
+				+ '<p style="color:black">tel: +30 210 337 8000 </p>' 
+				+ '<p style="color:black"> NO PHOTO ONLY VIDEO </p>'
+				+ '<p style="color:black">Web Site:  <a href="https://www.poseidonhotel.com.gr/" target="_blank">' 
+				+ 'https://www.poseidonhotel.com.gr/</a></p>'
+				;
+				
+				var contentGrandeBretagneHOTEL = '<h4>Grande Bretagne Hotel</h4>' 
+				+ '<p style="color:black">With breathtaking views of the fabled Acropolis, regal Syntagma Square and the Parliament, lush Lycabettus Hill or the original Olympic Stadium, the multi-awarded 5 star Hotel Grande Bretagne offers an unrivalled perspective of Athens mythical history.Situated right in the heart of the city, since 1874, the landmark hotel is within walking distance of exclusive shopping areas, museums and the business district.</p>' 
+				+ '<p style="color:black"><b>Grande Bretagne details:</b> 1 Vasileos Georgiou A’ str., Syntagma Square, Athens, 105 64 ,Greece</p>' 
+				+ '<p style="color:black">tel: +30 210 3330000 </p>' 
+				+ '<input style="width:300px;height:300px" type="image" style="cursor:default" src="uploads/grande bretagne.jpg" onclick="this.disabled = true" />'  
+				+ '<p style="color:black">Web Site:  <a href="https://www.grandebretagne.gr/" target="_blank">' 
+				+ 'https://www.grandebretagne.gr/</a></p>'
+				;
+				
+				var contentAsteraBeach = '<h4>Astera Beach</h4>' 
+				+ '<p style="color:black">Το λευκό και το χρώμα του φυσικού ξύλου κυριαρχούν. Ο συνδυασμός τους δημιουργεί μια αισθητική συμφωνία με τους υπόλοιπους φυσικούς χρωματισμούς του περιβάλλοντος, όπως το μπλε της θάλασσας και το πράσινο της έντονης βλάστησης. Για λόγους ασφαλείας και διατήρησης του υψηλού επιπέδου υπηρεσιών, στην Astir Beach ισχύει όριο χωρητικότητας που ορίζεται στα 1.000 άτομα.</p>' + '<p style="color:black"><b>Astera details:</b> Apollonos 40, Vouliagmeni 166 71</p>' 
+				+ '<p style="color:black">tel: +30 21 0890 1618 </p>'
+				+ '<input style="width:300px;height:300px" type="image" style="cursor:default" src="uploads/kaluteres-paralies.jpg" onclick="this.disabled = true" />'  
+				+ '<p style="color:black">Web Site:  <a href="http://astir-beach.com/" target="_blank">' 
+				+ 'http://astir-beach.com/</a></p>'
+				;
+				
+				var contentMarathonaBeach = '<h4>Marathonas Beach</h4>' 
+				+ '<p style="color:black">Συγκαταλέγεται ανάμεσα στις πλέον ιστορικές περιοχές της Αττικής. Βρίσκεται περίπου 42 χλιόμετρα βορειοανατολικά της Αθήνας. Πέρα από την πολιτισμική και ιστορική σημασία του – οι ομώνυμοι λίμνη και τύμβος και ο αρχαιολογικός χώρος της Ραμνούντας είναι μερικές από τις “ατραξιόν” της περιοχής – ο Μαραθώνας διαθέτει παράλληλα και αξιοθαύμαστες παραλίες. Η κορυφαία εξ αυτών είναι του Σχοινιά. Εκεί, υπάρχουν αρκετά παραλιακά εστιατόρια καθώς και πολυχώροι όπου μπορούν οι επισκέπτες να παίξουν μπιτς – βόλεϊ και να απολαύσουν τον καφέ τους σε ξαπλώστρες δίπλα πάνω στην άμμο…</p>' 
+				+ '<p style="color:black"><b>Marathwnas details:</b> Paralia Marathona Ag. Panteleimon 190 07</p>' 
+				+ '<p style="color:black">tel: +30 21 0890 1618 </p>' 
+				+ '<input style="width:300px;height:300px" type="image" style="cursor:default" src="uploads/kalamos.jpg" onclick="this.disabled = true" />'  
+				+ '<p style="color:black">Web Site:  <a href="http://www.visitmarathon.gr/" target="_blank">' 
+				+ 'http://www.visitmarathon.gr/</a></p>'
+				;
+
+				var contentVaroulko = '<h4>Varoulko Seaside</h4>' 
+				+ '<p style="color:black">Ήταν 1987 όταν το πρώτο Βαρούλκο γεννήθηκε στην οδό Διστόμου, στον Πειραιά. Και μαζί του γεννήθηκε η κουζίνα του Λευτέρη Λαζάρου, μια μαγειρευτή θαλασσινή κουζίνα που εμφανιζόταν για πρώτη φορά σε μενού γαστρονομικού εστιατορίου στην Ελλάδα. Παντρεύοντας την αγάπη του για το ψάρι και τα θαλασσινά, με την υψηλή τεχνική, τη δημιουργικότητα και τις εμπειρίες από τα ταξίδια του στις κουζίνες των καραβιών, ο Λαζάρου έβγαλε από την αφάνεια ψάρια άγνωστα και ταπεινά, κι έφτιαξε πιάτα δημιουργικά,με υψηλή μαγειρική τεχνική όμως γεμάτα πηγαία νοστιμιά, τα οποία παραμένουν κλασικά στην ελληνική γαστρονομική σκηνή.</p>' 
+				+ '<p style="color:black"><b>Varoulko details:</b> Pireos 80, Athens 104 35</p>' 
+				+ '<p style="color:black">tel: +30 21 0522 8400 </p>' 
+				+ '<input style="width:300px;height:300px" type="image" style="cursor:default" src="uploads/varoulko.jpg" onclick="this.disabled = true" />'  
+				+ '<p style="color:black">Web Site:  <a href="http://www.varoulko.gr/" target="_blank">' 
+				+ 'http://www.varoulko.gr/</a></p>'
+				;
+				
+				var contentOrizontes = '<h4>Orizontes</h4>' 
+				+ '<p style="color:black">Ο λόφος του Λυκαβηττού,  ο υψηλότερος της Αθήνας, που ατενίζει την πρωτεύουσα από τα 277 του μέτρα, δίκαια θεωρείται ένα από τα ρομαντικότερά της μέρη και ξεχωρίζει αναμφισβήτηταγια την πανοραμική θέα του, την ωραιότερη της πόλης. Οι ομορφότερες εικόνες που γεμίζουν τη ματιά κάθε επισκέπτη, είναι προς τη μεριά της Ακρόπολης και προς τον Πειραιά, όπου όταν το επιτρέπουν οι καιρικές συνθήκες, διακρίνεται και ο Σαρωνικός κόλπος. Σε αυτό ακριβώς το σημείο υπάρχει ένα μέρος που θα σας κάνει να απομακρυνθείτε από το θόρυβο της πόλης και να απολαύσετε την Ελληνική γαστρονομία. Οι Ορίζοντες είναι ένα από τα καλύτερα εστιατόρια της πρωτεύουσας. Απαλές αποχρώσεις, λιτές γραμμές και αριστοκρατική φινέτσα κυριαρχούν στο χώρο.  Διακόσμηση σύγχρονη και προσεγμένη, χαρακτηρίζεται από τη διακριτική πολυτέλεια των υλικών, τις έμμεσες κλασσικές αναφορές σχημάτων, χαμηλούς τόνους και απαλό φωτισμό, που αναδεικνύουν την υπέροχη πανοραμική θέα.  Στο εσωτερικό, που με φινέτσα «ζεσταίνει» το δρύινο πάτωμα, επικρατεί μια αυθεντικά κλασσική αισθητική, με ανάλαφρα χρώματα και προσεγμένη πολυτέλεια, ενώ ο δροσιστικός εξωτερικός χώρος, με πρωταγωνιστή την υπέροχη θέα, «δένει» αριστοκρατικά με το μάρμαρο και την πέτρα.</p>' 
+				+ '<p style="color:black"><b>Orizontes details:</b> Αριστίππου 1 ,Λυκαβηττός (Είσοδος Τελεφερίκ)</p>' 
+				+ '<p style="color:black">tel: +30 210 7210701 </p>' 
+				+ '<input style="width:300px;height:300px" type="image" style="cursor:default" src="uploads/orizontes.jpg" onclick="this.disabled = true" />'  
+				+ '<p style="color:black">Web Site:  <a href="http://www.orizonteslycabettus.gr/"  target="_blank">' 
+				+ 'http://www.orizonteslycabettus.gr/</a></p>'
+				;
+				//-------------------------------------------
+				
+				
+				//---------CLICK EVENT LISTENERS----------
+				infowindow = new google.maps.InfoWindow();
+				google.maps.event.addListener(markers[0], 'click', function() {infowindow.setContent(contentAkanthus);infowindow.open(map,AkanthusClub);});
+				google.maps.event.addListener(markers[1], 'click', function() {infowindow.setContent(contentNaluBar);infowindow.open(map,NaluBar);});
+				google.maps.event.addListener(markers[2], 'click', function() {infowindow.setContent(contentWClub);infowindow.open(map,WClub);});
+				google.maps.event.addListener(markers[3], 'click', function() {infowindow.setContent(contentElectraHotel);infowindow.open(map,electraHotel);});
+				google.maps.event.addListener(markers[4], 'click', function() {infowindow.setContent(contentPoseidonHOTEL);infowindow.open(map,poseidonHOTEL);});
+				google.maps.event.addListener(markers[5], 'click', function() {infowindow.setContent(contentGrandeBretagneHOTEL);infowindow.open(map,grandeBretagneHOTEL);});
+				google.maps.event.addListener(markers[6], 'click', function() {infowindow.setContent(contentAsteraBeach);infowindow.open(map,AsteraBeach);});
+				google.maps.event.addListener(markers[7], 'click', function() {infowindow.setContent(contentMarathonaBeach);infowindow.open(map,MarathonaBeach);});
+				google.maps.event.addListener(markers[8], 'click', function() {infowindow.setContent(contentVaroulko);infowindow.open(map,VaroulkoRestaurant);});
+				google.maps.event.addListener(markers[9], 'click', function() {infowindow.setContent(contentOrizontes);infowindow.open(map,OrizontesRestaurant);});				
+				//------------------------------------------
+			}
+			
+			function markersDisplay(x){
+				
+				switch(x){
+					case 1:
+							tickOrUntickAll();// BONUS
+							beachesDisplay();
+							stayDisplay();
+							foodDisplay();
+							funDisplay();
+							break;
+					case 2:// beaches
+							beachesDisplay();
+							break;
+					case 3:// stay
+							stayDisplay();
+							break;
+					case 4:// Food
+							foodDisplay();
+							break;
+					case 5:// fun
+							funDisplay();
+							break;						
+				}				
+		
+			}
+			
+			
+			//---------------------BONUS---------------------
+			function tickOrUntickAll(){
+			
+				if(document.part9.category.checked == true){
+					document.part9.beaches.checked = true;
+					document.part9.stay.checked = true;
+					document.part9.Food.checked = true;
+					document.part9.fun.checked = true;
+				}
+				else{
+					document.part9.beaches.checked = false;
+					document.part9.stay.checked = false;
+					document.part9.Food.checked = false;
+					document.part9.fun.checked = false;
+					if (infowindow) {infowindow.close();}
+				}
+			}			
+			//-----------------------------------------------
+			
+			function beachesDisplay(){
+				if(document.part9.beaches.checked == true){
+					markers[6].setMap(map);
+					markers[7].setMap(map);
+				}
+				else{
+					markers[6].setMap(null);
+					markers[7].setMap(null);
+				}
+			}
+			
+			function stayDisplay(){
+				if(document.part9.stay.checked == true){
+					markers[3].setMap(map);
+					markers[4].setMap(map);
+					markers[5].setMap(map);
+				}
+				else{
+					markers[3].setMap(null);
+					markers[4].setMap(null);
+					markers[5].setMap(null);					
+				}
+			}
+
+			function foodDisplay(){
+				if(document.part9.Food.checked == true){
+					markers[8].setMap(map);
+					markers[9].setMap(map);
+				}
+				else{
+					markers[8].setMap(null);
+					markers[9].setMap(null);					
+				}
+			}
+			
+			function funDisplay(){
+				if(document.part9.fun.checked == true){
+					markers[0].setMap(map);
+					markers[1].setMap(map);
+					markers[2].setMap(map);
+				}
+				else{
+					markers[0].setMap(null);
+					markers[1].setMap(null);
+					markers[2].setMap(null);
+				}
+			}
+			
+			// display the map
+			google.maps.event.addDomListener(window, 'load', initialize);
+
+		</script>		
+		
+    </head>
+
+<body>
+
+    <div id="container">
+
+        <header>
+    	<div class="width">
+				<p align="right" id="demo"></p>
+				<script>var d = new Date();document.getElementById("demo").innerHTML = d.toUTCString();</script>
+        		<h1><a href="index.html">Travelling In Athens</a></h1>
+
+    	    	<nav>
+                
+        			<ul>
+            			<li><a href="index.html">Αρχική</a></li>
+            	    	<li><a href="searchMapPOI.html">Αναζήτηση POI στον χάρτη</a></li>
+             	   		<li><a href="searchPOI.html">Αναζήτηση POI</a></li>
+              	  		<li><a href="top5POI.html">Top5</a></li>
+                        <li><a href="insertPOI.html">Καταχώρηση νέου POI</a></li>
+              	 		<li><a href="contact.html">Επικοινωνία</a></li>
+            		</ul>
+    	
+        		</nav>
+
+
+           	</div>
+        </header>
+
+
+        <div id="body" class="width">
+
+    		<section id="content" class="two-column with-right-sidebar">
+    		<article class="expanded">
+
+                <h3>Αναζήτηση POI στον χάρτη</h3><hr></hr><br>
+			
+				<p id="part9_Style" style="font-size:25px"><b>Σημεία Ενδιαφεροντος</b></p>
+				
+				<form name="part9">
+					<input type="checkbox" name="category" onclick="markersDisplay(1)" checked><b>&nbsp;Επιλογή/Απεπιλογή όλων</b><br>
+					<input type="checkbox" name="beaches" onclick="markersDisplay(2)"><b>&nbsp;Παραλίες</b><br>
+					<input type="checkbox" name="stay" onclick="markersDisplay(3)"><b>&nbsp;Διαμονή</b><br>
+					<input type="checkbox" name="Food" onclick="markersDisplay(4)"><b>&nbsp;Φαγητό</b><br>
+					<input type="checkbox" name="fun" onclick="markersDisplay(5)"><b>&nbsp;Διασκέδαση</b><br>
+				</form>
+			
+				<br><br>
+				<div id="googleMap" style="width:680px;height:380px;"></div>
+
+    		</article>
+            </section>
+            
+              <aside class="sidebar big-sidebar right-sidebar"> 	
+                <ul>	
+                    <li>
+						<!--here manage vitors from register users -->
+						<?php if(isset($_SESSION['login_user'])) {?>
+							<h4>Welcome</h4>
+							<ul class="blocklist">
+							<?php echo "<p>Welcome <strong><font size =\"5\" color=\"red\">".$_SESSION['login_user']."</font></strong> !!! <br>"; ?>
+							<a href="logout.php"> <strong> <font size ="4" color="blue"> Logout </font> </strong> </a>
+							</p></ul>
+							
+						<?php } else { ?>
+							<h4>Sign In</h4>
+							<ul class="blocklist">
+								<form id="signIn" name="signIn" action="signin.php" method="post" >
+									<b>Όνομα Χρήστη</b><br>
+									<input type="text" id="username" name="username"  maxlength="25" required><br>
+									<b>Κωδικός Χρήστη</b><br>
+									<input type="password" id="password" name="password"  maxlength="25" required><br><br>
+									<input class="button button-reversed" type="submit" name="signinOk" value="Είσοδος"><br>						
+									<a href="register.html"><u><b>Νέος Χρήστης?</b></u></a>
+								</form>                    
+							 </ul>
+						<?php } ?>
+                    </li>
+				</ul>
+            </aside>
+
+        	<div class="clear"></div>
+        </div>
+
+
+        <footer>
+                <p>&copy; Travelling In Greece 2015 by AlexP and Andrease</p>
+        </footer>
+
+
+    </div>
+
+
+
+</body>
+
+</html>

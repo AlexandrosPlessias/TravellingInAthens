@@ -1,0 +1,466 @@
+<!doctype html>
+<html>
+    <head>
+		<?php session_start();?>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Αναζήτηση POI</title>
+        <link rel="stylesheet" href="styles.css" type="text/css" />
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+		<script>
+            function openWindow(media,id){
+                var win = window.open("", "win", "width=410,height=250"); // a window object
+                var myText = document.getElementById(id).innerHTML;
+                win.document.open("text/html", "replace");
+				win.document.write('<video width="400" controls> <source src="'+media+'" type="video/webm">  <source src="'+media+'" type="video/mp4"></video>');
+                win.document.close(); 
+            }
+        </script>
+    </head>
+
+<body>
+
+    <div id="container">
+
+        <header>
+    	<div class="width">
+				<p align="right" id="demo"></p>
+				<script>var d = new Date();document.getElementById("demo").innerHTML = d.toUTCString();</script>
+        		<h1><a href="index.html">Travelling In Athens</a></h1>
+
+    	    	<nav>
+                
+        			<ul>
+            			<li><a href="index.html">Αρχική</a></li>
+            	    	<li><a href="searchMapPOI.html">Αναζήτηση POI στον χάρτη</a></li>
+             	   		<li><a href="searchPOI.html">Αναζήτηση POI</a></li>
+              	  		<li><a href="top5POI.html">Top5</a></li>
+                        <li><a href="insertPOI.html">Καταχώρηση νέου POI</a></li>
+              	 		<li><a href="contact.html">Επικοινωνία</a></li>
+            		</ul>
+    	
+        		</nav>
+
+
+           	</div>
+        </header>
+
+
+        <div id="body" class="width">
+
+    		<section id="content" class="two-column with-right-sidebar">
+    		<article class="expanded">
+
+                <h3>Αναζήτηση POI</h3><hr></hr><br>
+				<p>
+					<?php 
+						$host = "localhost"; 
+						$user = "root";  
+						$pass = "";
+						$db = "poi_site_database"; 
+						
+						// Create connection.
+						$conn = mysqli_connect($host, $user, $pass, $db);
+						
+						// Create show query.
+						$showQuery= "SELECT * FROM register_poi";
+						mysqli_query($conn, "set character set utf8");
+						$result = mysqli_query($conn, $showQuery);
+					?> 
+					
+					<table border=2>
+						<tr align="center"> 
+							<th>POI</th> 
+							<th>Κατηγορία</th> 
+							<th>Περιγραφή</th> 
+							<th>Photo/Video</th> 
+							<th>Χάρτης</th> 
+							<th>#Likes</th> 
+							<th>Χρήστης</th> 
+						</tr>
+						
+					<?php 
+					while ($row = mysqli_fetch_array($result, MYSQL_ASSOC)) {
+					
+						 $nameTemp = $row["poi_name"]; 
+						 
+						// Create category query.
+						$category_id=$row["poi_category_id"];
+						$showCategpryQuery= "SELECT * FROM poi_categories WHERE poi_category_id='$category_id'";
+						$result2 = mysqli_query($conn, $showCategpryQuery);
+						$row2 = mysqli_fetch_array($result2, MYSQL_ASSOC);
+						$categoryTemp =$row2["poi_category"];
+						 						  
+						 $textTemp = $row["poi_text"]; 
+						 
+						 if($row["poi_photo"]==NULL){
+							$multimediaTemp = $row["poi_video"];
+						 }else{
+							$multimediaTemp = $row["poi_photo"];
+						 }
+					 
+						 $mapTemp="searchMapPOI.html";
+
+						 $likesTemp=$row["poi_likes"];
+						 $usernameTemp=$row["username"];
+						 
+	
+						 
+						 if($row["poi_photo"]==NULL){
+						
+							echo "<tr align=\"center\"> 
+									<td>$nameTemp</td> <td>$categoryTemp</td> 
+									<td>$textTemp</td> 
+									<td> <button type=\"button\" style=\"cursor:pointer\" onclick=\"openWindow('$multimediaTemp','div1')\">View me</button> </td> 
+									<td><a href=\"$mapTemp\">Click&nbsp;me</a></td> 
+									<td>$likesTemp <input type=\"image\" style=\"cursor:default\" src=\"image/karaLike.png\" onclick=\"this.disabled = true\" /></td> 
+									<td>$usernameTemp</td> 
+								</tr>
+								";
+						}else{
+												
+							echo "<tr align=\"center\"> <td>$nameTemp</td> 
+									<td>$categoryTemp</td> <td>$textTemp</td> 
+									<td><img src=\"$multimediaTemp\" alt=\"Click to enlarge\" width=\"100\" height=\"100\" /></td> 
+									<td align=\"center\"><a href=\"$mapTemp\">Click&nbsp;me</a></td> 
+									<td>$likesTemp <input type=\"image\" style=\"cursor:default\" src=\"image/karaLike.png\" /></td> 
+									<td>$usernameTemp</td> 
+								</tr>
+								";
+						}
+					 
+					} 
+						
+						mysqli_close($conn);
+					?> 
+		
+		
+					</table>
+				</p>
+				
+				
+				<br><br>
+				<h3>Αναζήτηση POI βάση κριτηρίων</h3><hr></hr><br>
+				<p>
+					<form id="searchFilter" name="searchFilter" method="post"  >
+					
+						<table>
+							<tr> 
+							<td>Κατηγορία:</td>
+							<td>
+								<select name="category" id="category"> 							
+									 <option value="1">Ξενοδοχεία</option>
+									 <option value="2">Παραλίες</option>
+									 <option value="3">Clubs</option>
+									 <option value="4">Εστιατόρια</option>
+								</select> 		
+							</td>
+						</tr>
+						<tr>
+							<td>Είδος αρχείου:</td>
+							<td>
+								<select name="file_type" id="file_type">
+									<option value="photo">Φωτογραφία</option>
+									<option value="video">Video</option>
+								</select>
+							</td>
+						</tr>
+							
+							
+						</table>
+								
+						<input  class="button button-reversed" type="submit" name="searchFilterOK" value="Αναζήτηση">&nbsp;
+						<input  class="button button-reversed" type="reset" name="reset" value="Καθαρισμος Πεδιων">
+	
+					</form>
+					
+					<?php
+						$host = "localhost"; 
+						$user = "root";  
+						$pass = "";
+						$db = "poi_site_database"; 
+							
+						// Create connection.
+						$conn = mysqli_connect($host, $user, $pass, $db);
+							
+						if (!$conn){
+							echo "Problem in the connection".mysqli_connect_error() ;
+						}else{
+
+							if(isset($_POST['searchFilterOK'])){
+							
+								// Get form's data + escape variables for security.
+								$categoryTemp = mysqli_real_escape_string($conn , $_POST['category']);
+								$multimediaTempTemp = mysqli_real_escape_string($conn ,$_POST['file_type']);
+								
+								mysqli_query($conn, "set character set utf8");
+								
+								// Create search query.
+								if( $multimediaTempTemp==="video" ) {
+									$searchQuery= "SELECT * FROM register_poi WHERE poi_category_id ='$categoryTemp' AND poi_photo=''";
+	
+									
+								}else{ // ($multimediaTempTemp=="photo")
+									$searchQuery= "SELECT * FROM register_poi WHERE poi_category_id ='$categoryTemp' AND poi_video=''";
+								}
+								$resultSearch = mysqli_query($conn, $searchQuery);
+								
+								echo"</br><b>Αποτελέσματα: </b>";
+								
+								echo "<table border=2>";
+								
+								if ($categoryTemp==1){
+									echo"<caption>Ξενοδοχεία με $multimediaTempTemp.</caption>";
+								}else if($categoryTemp==2){
+									echo"<caption>Παραλίες με $multimediaTempTemp. </caption>";
+								}else if($categoryTemp==3){
+									echo"<caption>Clubs με $multimediaTempTemp. </caption>";
+								}else { // $categoryTemp==4
+									echo"<caption>Εστιατόρια με $multimediaTempTemp. </caption>";
+								}
+										
+										
+								echo "	<tr align=\"center\"> 
+											<th>POI</th> 
+											<th>Κατηγορία</th> 
+											<th>Περιγραφή</th> 
+											<th>Photo/Video</th> 
+											<th>Χάρτης</th> 
+											<th>#Likes</th> 
+											<th>Χρήστης</th> 
+									</tr>";
+						
+					
+								
+								while ($rowSearch = mysqli_fetch_array($resultSearch, MYSQL_ASSOC)) {
+
+									$nameTemp = $rowSearch["poi_name"]; 
+									 
+									// Create category query.
+									$category_id=$rowSearch["poi_category_id"];
+									$showCategpryQuery= "SELECT * FROM poi_categories WHERE poi_category_id='$category_id'";
+									$result2 = mysqli_query($conn, $showCategpryQuery);
+									$row2 = mysqli_fetch_array($result2, MYSQL_ASSOC);
+									$categoryTemp =$row2["poi_category"];
+															  
+									 $textTemp = $rowSearch["poi_text"]; 
+									 
+									 if($rowSearch["poi_photo"]==NULL){
+										$multimediaTemp = $rowSearch["poi_video"];
+									 }else{
+										$multimediaTemp = $rowSearch["poi_photo"];
+									 }
+								 
+									 $mapTemp="searchMapPOI.html";
+
+									 $likesTemp=$rowSearch["poi_likes"];
+									 $usernameTemp=$rowSearch["username"];
+									 
+
+									 
+									 if($rowSearch["poi_photo"]==NULL){
+									
+										echo "<tr align=\"center\"> 
+												<td>$nameTemp</td> <td>$categoryTemp</td> 
+												<td>$textTemp</td> 
+												<td> <button type=\"button\" style=\"cursor:pointer\" onclick=\"openWindow('$multimediaTemp','div1')\">View me</button> </td> 
+												<td><a href=\"$mapTemp\">Click&nbsp;me</a></td> 
+												<td>$likesTemp <input type=\"image\" style=\"cursor:default\" src=\"image/karaLike.png\" onclick=\"this.disabled = true\" /></td> 
+												<td>$usernameTemp</td> 
+											</tr>
+											";
+									}else{
+															
+										echo "<tr align=\"center\"> <td>$nameTemp</td> 
+												<td>$categoryTemp</td> <td>$textTemp</td> 
+												<td><img src=\"$multimediaTemp\" alt=\"Click to enlarge\" width=\"100\" height=\"100\" /></td> 
+												<td align=\"center\"><a href=\"$mapTemp\">Click&nbsp;me</a></td> 
+												<td>$likesTemp <input type=\"image\" style=\"cursor:default\" src=\"image/karaLike.png\" /></td> 
+												<td>$usernameTemp</td> 
+											</tr>
+											";
+									}
+								}
+								echo "</table> </br>";
+							}
+						
+						}
+
+						mysqli_close($conn);
+							
+					?>
+				
+				</p>
+				
+				
+				<br><br>
+				<h3>Αναζήτηση POI βάση ονόματος(ολικός ή μερικός)</h3><hr></hr><br>
+				<p>
+					
+					
+					<form id="searchLike" name="searchLike"  method="post"  >
+						
+						<table>
+							<tr> <td>Λέξη κλειδί:</td> <td><input type="text" name="keyWord" id="keyWord" maxlength="25" required ></td> </tr>
+						</table>
+						
+						<input  class="button button-reversed" type="submit" name="searchLikeOk" value="Αναζήτηση">&nbsp;
+						<input  class="button button-reversed" type="reset" name="reset" value="Καθαρισμος Πεδιων">
+		
+					</form>
+
+					
+					<?php
+						$host = "localhost"; 
+						$user = "root";  
+						$pass = "";
+						$db = "poi_site_database"; 
+							
+						// Create connection.
+						$conn = mysqli_connect($host, $user, $pass, $db);
+							
+						if (!$conn){
+							echo "Problem in the connection".mysqli_connect_error() ;
+						}else{
+
+							if(isset($_POST['searchLikeOk'])){
+							
+								// Get form's data + escape variables for security.
+								$keyTemp = mysqli_real_escape_string($conn , $_POST['keyWord']);
+								
+								mysqli_query($conn, "set character set utf8");
+								
+								// Create search like query.
+								$searchLikeQuery= "SELECT * FROM register_poi WHERE poi_name LIKE '%$keyTemp%'";	
+
+								$resultLikeSearch = mysqli_query($conn, $searchLikeQuery);
+								
+								echo"</br><b>Αποτελέσματα: </b>";
+								
+								echo "<table border=2>";
+								echo"<caption>POI με $keyTemp.</caption>";
+								echo "<tr align=\"center\"> 
+											<th>POI</th> 
+											<th>Κατηγορία</th> 
+											<th>Περιγραφή</th> 
+											<th>Photo/Video</th> 
+											<th>Χάρτης</th> 
+											<th>#Likes</th> 
+											<th>Χρήστης</th> 
+									</tr>";
+						
+					
+								
+								while ($rowSearch = mysqli_fetch_array($resultLikeSearch, MYSQL_ASSOC)) {
+
+									$nameTemp = $rowSearch["poi_name"]; 
+									 
+									// Create category query.
+									$category_id=$rowSearch["poi_category_id"];
+									$showCategpryQuery= "SELECT * FROM poi_categories WHERE poi_category_id='$category_id'";
+									$result2 = mysqli_query($conn, $showCategpryQuery);
+									$row2 = mysqli_fetch_array($result2, MYSQL_ASSOC);
+									$categoryTemp =$row2["poi_category"];
+															  
+									 $textTemp = $rowSearch["poi_text"]; 
+									 
+									 if($rowSearch["poi_photo"]==NULL){
+										$multimediaTemp = $rowSearch["poi_video"];
+									 }else{
+										$multimediaTemp = $rowSearch["poi_photo"];
+									 }
+								 
+									 $mapTemp="searchMapPOI.html";
+
+									 $likesTemp=$rowSearch["poi_likes"];
+									 $usernameTemp=$rowSearch["username"];
+									 
+
+									 
+									 if($rowSearch["poi_photo"]==NULL){
+									
+										echo "<tr align=\"center\"> 
+												<td>$nameTemp</td> <td>$categoryTemp</td> 
+												<td>$textTemp</td> 
+												<td> <button type=\"button\" style=\"cursor:pointer\" onclick=\"openWindow('$multimediaTemp','div1')\">View me</button> </td> 
+												<td><a href=\"$mapTemp\">Click&nbsp;me</a></td> 
+												<td>$likesTemp <input type=\"image\" style=\"cursor:default\" src=\"image/karaLike.png\" onclick=\"this.disabled = true\" /></td> 
+												<td>$usernameTemp</td> 
+											</tr>
+											";
+									}else{
+															
+										echo "<tr align=\"center\"> <td>$nameTemp</td> 
+												<td>$categoryTemp</td> <td>$textTemp</td> 
+												<td><img src=\"$multimediaTemp\" alt=\"Click to enlarge\" width=\"100\" height=\"100\" /></td> 
+												<td align=\"center\"><a href=\"$mapTemp\">Click&nbsp;me</a></td> 
+												<td>$likesTemp <input type=\"image\" style=\"cursor:default\" src=\"image/karaLike.png\" /></td> 
+												<td>$usernameTemp</td> 
+											</tr>
+											";
+									}
+								}
+								echo "</table> </br>";
+							}
+						
+						}
+
+						mysqli_close($conn);
+							
+					?>
+				
+				</p>
+				
+				
+				
+
+				
+			<div style="display: none" id="div1">	</div>
+				
+    		</article>
+            </section>
+			
+			<aside class="sidebar big-sidebar right-sidebar"> 	
+                <ul>	
+                    <li>
+						<!--here manage vitors from register users -->
+						<?php if(isset($_SESSION['login_user'])) {?>
+							<h4>Welcome</h4>
+							<ul class="blocklist">
+							<?php echo "<p>Welcome <strong><font size =\"5\" color=\"red\">".$_SESSION['login_user']."</font></strong> !!! <br>"; ?>
+							<a href="logout.php"> <strong> <font size ="4" color="blue"> Logout </font> </strong> </a>
+							</p></ul>
+							
+						<?php } else { ?>
+							<h4>Sign In</h4>
+							<ul class="blocklist">
+								<form id="signIn" name="signIn" action="signin.php" method="post" >
+									<b>Όνομα Χρήστη</b><br>
+									<input type="text" id="username" name="username"  maxlength="25" required><br>
+									<b>Κωδικός Χρήστη</b><br>
+									<input type="password" id="password" name="password"  maxlength="25" required><br><br>
+									<input class="button button-reversed" type="submit" name="signinOk" value="Είσοδος"><br>						
+									<a href="register.html"><u><b>Νέος Χρήστης?</b></u></a>
+								</form>                    
+							 </ul>
+						<?php } ?>
+                    </li>
+				</ul>
+            </aside>
+			
+
+			<div class="clear"></div>
+        </div>
+
+
+        <footer>
+                <p>&copy; Travelling In Greece 2015 by AlexP and Andrease</p>
+        </footer>
+
+
+    </div>
+
+
+
+</body>
+
+</html>
